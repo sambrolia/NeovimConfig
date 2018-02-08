@@ -12,10 +12,17 @@ call plug#begin('Neovim/plugged')
 Plug 'scrooloose/nerdtree'
 Plug 'joshdick/onedark.vim'
 Plug 'Raimondi/delimitMate'
-Plug 'sheerun/vim-polyglot'
 Plug 'Shougo/deoplete.nvim'
 Plug 'dyng/ctrlsf.vim'
 Plug 'ctrlpvim/ctrlp.vim'
+Plug 'sheerun/vim-polyglot'
+Plug 'nfvs/vim-perforce'
+Plug 'mhinz/vim-startify'
+Plug 'terryma/vim-multiple-cursors'
+Plug 'vim-airline/vim-airline'
+Plug 'yuttie/comfortable-motion.vim'
+Plug 'w0rp/ale'  "linting
+Plug 'kien/rainbow_parentheses.vim'
 
 call plug#end()
 "}}}
@@ -52,6 +59,12 @@ set fillchars+=vert:\│                                                        
 set pumheight=30                                                                "Maximum number of entries in autocomplete popup
 set mouse=a 
 
+augroup VCenterCursor
+  au!
+  au BufEnter,WinEnter,WinNew,VimResized *,*.*
+        \ let &scrolloff=winheight(win_getid())/2
+augroup END
+
 " map system clipboard to leader yank and paste
 nmap     <leader>y "+y
 vmap     <leader>y "+y
@@ -60,6 +73,12 @@ vmap     <leader>p "+p
 
 " leader shortcuts for NERDTree
 map <leader>t :NERDTree<CR>
+
+" leader shortcut for opening explorer
+map <F3> :!start explorer /select,%:p<CR>
+
+nnoremap j gj
+nnoremap k gk
 
 syntax on                                                                       "turn on syntax highlighting
 silent! colorscheme onedark
@@ -74,6 +93,37 @@ set expandtab
 set smartindent
 set nofoldenable
 
+
+" }}}
+" ================ Rainbow_parentheses ====================== {{{
+let g:rbpt_colorpairs = [
+    \ ['brown',       'RoyalBlue3'],
+    \ ['Darkblue',    'SeaGreen3'],
+    \ ['darkgray',    'DarkOrchid3'],
+    \ ['darkgreen',   'firebrick3'],
+    \ ['darkcyan',    'RoyalBlue3'],
+    \ ['darkred',     'SeaGreen3'],
+    \ ['darkmagenta', 'DarkOrchid3'],
+    \ ['brown',       'firebrick3'],
+    \ ['gray',        'RoyalBlue3'],
+    \ ['black',       'SeaGreen3'],
+    \ ['darkmagenta', 'DarkOrchid3'],
+    \ ['Darkblue',    'firebrick3'],
+    \ ['darkgreen',   'RoyalBlue3'],
+    \ ['darkcyan',    'SeaGreen3'],
+    \ ['darkred',     'DarkOrchid3'],
+    \ ['red',         'firebrick3'],
+    \ ]
+let g:rbpt_max = 16
+let g:rbpt_loadcmd_toggle = 0
+
+au VimEnter * RainbowParenthesesToggle
+au Syntax * RainbowParenthesesLoadRound
+au Syntax * RainbowParenthesesLoadSquare
+au Syntax * RainbowParenthesesLoadBraces
+
+
+
 " }}}
 " ================ Turn Off Swap Files ============== {{{
 
@@ -82,6 +132,10 @@ set nobackup
 set nowb
 "}}}
 
+" ================ Powerline ============== {{{
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#ale#enabled = 1
+"}}}
 " ================ Persistent Undo ================== {{{
 
 " Keep undo history across sessions, by storing in file.
@@ -96,7 +150,6 @@ augroup vimrc
     autocmd!
 augroup END
 
-autocmd vimrc BufWritePre * :call StripTrailingWhitespaces()                    "Auto-remove trailing spaces
 autocmd vimrc InsertEnter * :set nocul                                          "Remove cursorline highlight
 autocmd vimrc FocusGained,BufEnter * checktime                                  "Refresh file when vim gets focus
 
@@ -113,6 +166,22 @@ nnoremap <leader>ft :CtrlSFToggle<CR>
 inoremap <leader>ft <Esc>:CtrlSFToggle<CR>
 
 "}}}
+
+" ================ windows controls ================ {{{
+nmap <leader>k <C-w>k
+nmap <leader>j <C-w>j
+nmap <leader>h <C-w>h
+nmap <leader>l <C-w>l
+"}}}
+
+let g:multi_cursor_start_key='<leader>d' 
+let g:multi_cursor_next_key='<C-n>' 
+let g:multi_cursor_prev_key='<C-p>' 
+let g:multi_cursor_skip_key='<C-x>' 
+let g:multi_cursor_quit_key='<Esc>' 
+
+
+
 
 " ================ ctrl P ================ {{{
 if executable('ag')
@@ -133,4 +202,7 @@ let g:bold_highlight_groups = ['Function', 'Statement', 'Todo', 'CursorLineNr', 
 for group in g:bold_highlight_groups
   call onedark#extend_highlight(group, { 'gui': 'bold' })
 endfor
+"}}}
+
+" ================ Colorscheme setup ================ {{{
 "}}}
